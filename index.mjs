@@ -54,6 +54,10 @@ while (true) {
                 await input("")
                 break
             }
+            else{
+                console.log("Opción no válida.")
+                await input("")
+            }
             }
         }
         else if (opcion === "2") {
@@ -64,7 +68,7 @@ while (true) {
     }
     else {
         console.log("La opción seleccionada no es válida")
-        await input("....")
+        await input("")
     }
 }
 

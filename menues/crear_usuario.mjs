@@ -13,6 +13,8 @@ export async function crearUsuario () {
         } else if (opcion.toLowerCase() === "n") {
             break
         }
+        console.log("Esta opción no es válida.")
+        await input("")
     }
 }
 

@@ -78,7 +78,7 @@ export class Posts {
     }
 
     static async listarTodos() {
-        const posts = await this.#leerArchivo();
+        const posts = await this.#leerArchivo()
         const usuarios = await import("./usuarios.mjs")
             .then(mod => mod.Usuario.listar())
 
@@ -103,10 +103,23 @@ export class Posts {
         })
     }
 
-    async borrar(postId) {
-        
-        
-    }
+    async borrarPost() {
+        const posts = await Posts.#leerArchivo()
+        const filas = posts.split("\n").filter(r => r.trim() !== "" && !r.startsWith("ID;"))
 
+        const idEliminar = await input("Ingrese el ID del post a eliminar: ")
+        const filtroFilas = filas.filter (r => r.split(",")[0] !== idEliminar.trim())
+
+        if (filtroFilas.length === filas.length) {
+            console.log("No se encontró un post con ese ID.")
+            await input("")
+            }
+        await fs.writeFile(
+            `./posts.csv`,
+            `ID; usuario_id; titulo; contenido\n${filtroFilas.join("\n")}\n`
+        )
+        console.log("Post eliminado correctamente.")
+        await input("")
+    }
 }
 

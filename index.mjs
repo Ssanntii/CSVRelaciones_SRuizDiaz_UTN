@@ -4,6 +4,7 @@ import { iniciarSesion } from "./menues/sesiones.mjs"
 import {listarPosts} from "./menues/ver_posts.mjs"
 import { crearPost } from "./menues/crear_posts.mjs"
 import { listarPost } from "./menues/listar_posts.mjs"
+import { borrarPost } from "./menues/borrar_posts.mjs"
 
 while (true) {
 
@@ -19,56 +20,63 @@ while (true) {
 
     const opcion = await input("Seleccione una opción: ")
 
-    if (opcion === "1") {
-        const usuario = await iniciarSesion()
-        userId = usuario.id
-        while (true) {
-            console.clear()
-            console.log("\tHeitter")
-            console.log("===========================")
-            console.log(`Bienvenido ${usuario.nombre}!!`, "Que quieres hacer hoy?\n\n1. Crear un Post\n2. Borrar un Post\n3. Ver mis Posts\n4. Ver todos los Posts\n5. Cerrar Sesión")
-            console.log("\n===========================")
-            const sOpcion = await input("Selecciona una opción: ")
-
-            if (sOpcion === "1") {
-                await crearPost(userId)
-            }
-            else if (sOpcion === "2") {
-                // await borrarPost(userId)
+    switch(opcion) {
+        case "1":
+            const usuario = await iniciarSesion()
+            userId = usuario.id
+            let signal = true
+            while (signal) {
                 console.clear()
-                console.log("Funcionalidad en desarrollo...")
-            }
-            else if (sOpcion === "3") {
-                await listarPost(userId)
-                await input("")
-                continue
-            }
-            else if (sOpcion === "4") {
-                await listarPosts()
-                await input("")
-                continue
-            }
-            else if (sOpcion === "5") {
-                console.clear()
-                console.log("Cerrando sesión...")
-                await input("")
-                break
-            }
-            else{
-                console.log("Opción no válida.")
-                await input("")
-            }
-            }
-        }
-        else if (opcion === "2") {
+                console.log("\tHeitter")
+                console.log("===========================")
+                console.log(`Bienvenido/a ${usuario.nombre}!!`, "Que quieres hacer hoy?\n\n1. Crear un Post\n2. Borrar un Post\n3. Ver mis Posts\n4. Ver todos los Posts\n5. Cerrar Sesión")
+                console.log("\n===========================")
+                const sOpcion = await input("Selecciona una opción: ")
 
+                switch(sOpcion) {
+                    case "1":
+                        await crearPost(userId)
+                        break
+                
+                    case "2":
+                        await borrarPost(userId)
+                        break
+
+                    case"3": 
+                        console.clear()
+                        await listarPost(userId)
+                        await input("")
+                        break
+                
+                    case "4":
+                        console.clear()
+                        await listarPosts()
+                        break
+                
+                    case "5":
+                        console.clear()
+                        console.log("Cerrando sesión...")
+                        await input("")
+                        signal = false
+                        break
+
+                    default:
+                        console.log("Opción no válida.")
+                        await input("")
+                }
             }
-    else if (opcion === "3") {
-        break
-    }
-    else {
-        console.log("La opción seleccionada no es válida")
-        await input("")
+            break
+
+        case "2":
+            await crearUsuario()
+            break
+
+        case "3":
+            break
+
+        default:
+            console.log("La opción seleccionada no es válida")
+            await input("")
     }
 }
 

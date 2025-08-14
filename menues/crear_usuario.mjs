@@ -4,8 +4,9 @@ import { Usuario } from "../models/usuarios.mjs"
 export async function crearUsuario () {
     while (true) {
         console.clear()
-        console.log("Desea crear un usuario nuevo? (y/n)")
-        const opcion = await input(": ")
+        console.log("\tCrear Usuario")
+        console.log("===========================")
+        const opcion = await input("Desea crear un usuario nuevo? (y/n): ")
         if (opcion.toLowerCase() === "y") {
             await crear()
             break
@@ -15,9 +16,10 @@ export async function crearUsuario () {
     }
 }
 
-
 async function crear () {
     console.clear()
+    console.log("\tCrear Usuario")
+    console.log("===========================")
     const nombre = await input("Nombre: ")
     const apellido = await input("Apellido: ")
     const dni = await input("DNI: ")
@@ -27,16 +29,20 @@ async function crear () {
     const error = await usuario.validar()
 
     if (error) {
+        console.clear()
+        console.log("\tCrear Usuario")
+        console.log("===========================")
         console.log(error)
+        console.log("===========================")
+        await input("")
     } else {
         await usuario.guardar()
-        await input('..')
         console.clear()
-        console.log("#########################")
-        console.log("Usuario creado exitosamente")
-        console.log("#########################")
-
+        console.log("\tCrear Usuario")
+        console.log("===========================")
+        console.log("Usuario creado con éxito!")
+        console.log("===========================")
+        await input('')
     }
-    // await usuario.guardar()
-    await input("....")
+    console.clear()
 }

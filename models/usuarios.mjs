@@ -62,9 +62,7 @@ export class Usuario {
     async guardar () {
         const usuarios = await Usuario.#leerArchivo()
 
-        if (usuarios.length === 0) {
-            this.id = 1
-        }
+        if (usuarios.length === 0) this.id = 1
         else {
             const ultimoUsuario = usuarios.pop()
             this.id = (Number(ultimoUsuario.id) + 1).toString()

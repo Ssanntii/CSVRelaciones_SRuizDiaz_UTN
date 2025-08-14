@@ -1,9 +1,10 @@
 import fs from "fs/promises"
+import { Usuario } from "./usuarios.mjs"
 
 export class Posts {
 
     static file = "posts.csv"
-    static columns = ["id", "usuarioId", "titulo", "contenido"]
+    static columns = ["id", "usuario_id", "titulo", "contenido"]
 
     constructor (usuarioId, titulo, contenido, id = null) {
         this.id = id
@@ -20,7 +21,7 @@ export class Posts {
         const datos = contenido.split("\n")
         const datosFiltrados = datos.filter(
             (valor, indice) => {
-                if (indice !== 0) return valor
+                return indice !== 0 && valor.trim() !== ""
             }
         )
 
@@ -36,31 +37,76 @@ export class Posts {
     }
 
     async validar () {
-        if (!this.titulo || this.titulo.length < 5) {
-            return "El título debe tener al menos 5 caracteres."
-        }
-        if (!this.contenido || this.contenido.length < 10) {
-            return "El contenido debe tener al menos 10 caracteres."
-        }
+
+        if (!this.titulo) this.titulo = "Sin título"
+        if (this.titulo.length > 20) return "El título no puede tener más de 20 caracteres." 
+
+        if (!this.contenido) return "El contenido del post no puede estar vacío."
+        if (this.contenido.length > 200) return "El contenido del post no puede tener más de 200 caracteres."
+
+        const usuarios = await Usuario.listar()
+        const usuarioExiste = usuarios.find(u => u.id == this.usuarioId)
+        if (!usuarioExiste) return "El usuario no es válido."
+
         const posts = await Posts.#leerArchivo()
         const existe = posts.filter(post => {
             if (post.titulo === this.titulo && post.contenido === this.contenido) {
                 return post
             }
         })
+        if (existe.length > 0) return "Ya existe un post con ese título y contenido."
         return null
     }
+
     async guardar () {
         const posts = await Posts.#leerArchivo()
-        this.id = posts.length + 1
+
+        if (posts.length === 0) this.id = 1
+        else {
+            const ultimoPost = posts.pop()
+            this.id = (Number(ultimoPost.id) + 1).toString()
+        }
+
         const nuevoPost = `${this.id};${this.usuarioId};${this.titulo};${this.contenido}\n`
+
         await fs.appendFile(this.constructor.file, nuevoPost)
-        return this
     }
-    static async listar () {
+    static async listarPosts(usuarioId) {
         const posts = await this.#leerArchivo()
-        return posts
+        const postsUsuario = posts.filter(post => post.usuarioId == usuarioId)
+        return postsUsuario
     }
-    
-    
+
+    static async listarTodos() {
+        const posts = await this.#leerArchivo();
+        const usuarios = await import("./usuarios.mjs")
+            .then(mod => mod.Usuario.listar())
+
+        return posts.map(post => {
+            const autor = usuarios.find(u => u.id == post.usuarioId)
+
+            let autorNombre, autorApellido, username
+
+            if (autor) {
+                autorNombre = autor.nombre
+                autorApellido = Array.isArray(autor.apellido)
+                    ? autor.apellido.map(a => a.trim()).join("")
+                    : autor.apellido
+
+                username = `${autorNombre}${autorApellido}`.replace(/\s+/g, "")
+            }
+
+            return {
+                ...post,
+                username
+            }
+        })
+    }
+
+    async borrar(postId) {
+        
+        
+    }
+
 }
+

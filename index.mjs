@@ -20,7 +20,7 @@ while (true) {
         console.log("\tHeitter")
         console.log("===========================")
         console.log(`Bienvenido ${usuario.nombre}!!`, "Que quieres hacer hoy?\n\n1. Crear un Post\n2. Borrar un Post\n3. Ver mis Posts\n4. Ver todos los Posts\n5. Cerrar Sesión")
-        console.log("===========================")
+        console.log("\n===========================")
         const sOpcion = await input("Selecciona una opción: ")
 
         if (sOpcion === "1") {

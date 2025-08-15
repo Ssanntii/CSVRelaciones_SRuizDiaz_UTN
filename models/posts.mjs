@@ -1,5 +1,6 @@
 import fs from "fs/promises"
 import { Usuario } from "./usuarios.mjs"
+import { input } from "../utils.mjs"
 
 export class Posts {
 
@@ -103,21 +104,31 @@ export class Posts {
         })
     }
 
-    async borrarPost() {
+    async borrarPost(delID) {
         const posts = await Posts.#leerArchivo()
-        const filas = posts.split("\n").filter(r => r.trim() !== "" && !r.startsWith("ID;"))
+        const idBuscado = String(delID).trim()
 
-        const idEliminar = await input("Ingrese el ID del post a eliminar: ")
-        const filtroFilas = filas.filter (r => r.split(",")[0] !== idEliminar.trim())
+        const filtroFilas = posts.filter(p => String(p.id).trim() !== idBuscado)
 
-        if (filtroFilas.length === filas.length) {
-            console.log("No se encontró un post con ese ID.")
-            await input("")
-            }
+        if (filtroFilas.length === posts.length) return"No se encontró un post con ese ID."
+
+        const header = "ID; usuario_id; titulo; contenido"
+        const body = filtroFilas
+            .map(p => [
+                p.id,
+                p.usuarioId,
+                p.titulo,
+                p.contenido
+            ].join("; "))
+            .join("\n")
+
         await fs.writeFile(
-            `./posts.csv`,
-            `ID; usuario_id; titulo; contenido\n${filtroFilas.join("\n")}\n`
+            "./posts.csv",
+            `${header}\n${body}\n`,{
+                encoding: "utf-8"
+            }
         )
+
         console.log("Post eliminado correctamente.")
         await input("")
     }
